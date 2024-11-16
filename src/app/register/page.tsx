@@ -35,23 +35,45 @@ const Page = () => {
     );
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmit = async () => {
     // Verificação se todos os campos estão preenchidos
     const { name, cpf, email, confirmEmail, password, confirmPassword } = formData;
+  
     if (!name || !cpf || !email || !confirmEmail || !password || !confirmPassword) {
-      alert("Por favor, preencha todos os campos.");
+      alert('Por favor, preencha todos os campos.');
       return;
     }
+  
     if (email !== confirmEmail) {
-      alert("Os e-mails não coincidem.");
+      alert('Os e-mails não coincidem.');
       return;
     }
+  
     if (password !== confirmPassword) {
-      alert("As senhas não coincidem.");
+      alert('As senhas não coincidem.');
       return;
     }
-    // Se todos os campos estão corretos, avança para a próxima etapa
-    nextStep();
+  
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, cpf, email, password }),
+      });
+  
+      if (response.ok) {
+        alert('Cadastro realizado com sucesso!');
+        nextStep(); // Avança para o próximo passo
+      } else {
+        const data = await response.json();
+        alert(`Erro: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('Erro ao realizar o cadastro:', error);
+      alert('Erro ao realizar o cadastro. Tente novamente mais tarde.');
+    }
   };
 
   const savePreferences = async () => {

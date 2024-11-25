@@ -39,7 +39,7 @@ export default function RootLayout({
                   </a>
                 </li>
                 <li className='max-lg:border-b border-gray-300 max-lg:py-3 px-3'>
-                  <a href="/login"
+                  <a href="/home"
                     className='hover:text-[#007bff] text-[#007bff] block font-semibold text-[15px]'>Página Inicial</a>
                 </li>
                 <li className='max-lg:border-b border-gray-300 max-lg:py-3 px-3'><a href='/login'

@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcrypt'; // Certifique-se de que o bcrypt está instalado
 
 const prisma = new PrismaClient()
 const app = express()
@@ -16,22 +17,29 @@ app.use(express.json())
 
 // Rota POST para criar um usuário
 app.post('/register', async (req, res) => {
-    const { name, cpf, email } = req.body;
+    const { name, cpf, email, password } = req.body;
 
     try {
-        if (!name || !cpf || !email) {
+        if (!name || !cpf || !email || !password) {
             return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
         }
 
-        
+        // Criptografar a senha
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Criar usuário no banco
         const user = await prisma.user.create({
-            data: { name, cpf, email },
+            data: {
+                name,
+                cpf,
+                email,
+                password: hashedPassword,
+            },
         });
 
         res.status(201).json({ message: 'Usuário cadastrado com sucesso', user });
-        
-
     } catch (error) {
+        console.error('Erro ao cadastrar usuário:', error);
         res.status(500).json({ message: 'Erro ao cadastrar usuário', error: error.message });
     }
 });
@@ -55,6 +63,7 @@ app.get('/register', async (req, res) => {
             name: user.name,
             cpf: user.cpf,
             email: user.email,
+            password: user.password,
         }));
 
         res.status(200).json(formattedUsers);
@@ -100,6 +109,41 @@ app.get('/savePreferences', (req, res) => {
         res.status(500).json({ message: 'Erro ao recuperar preferências', error: error.message });
     }
 });
+
+
+
+
+app.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    console.log('Requisição de login recebida:', { email, password }); // Log dos dados recebidos
+
+    try {
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email e senha são obrigatórios' });
+        }
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        console.log('Usuário encontrado no banco:', user); // Log do usuário encontrado
+
+        if (!user) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        console.log('Senha válida:', isPasswordValid); // Log do resultado da comparação de senhas
+
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Senha incorreta' });
+        }
+
+        res.status(200).json({ message: 'Login bem-sucedido', user });
+    } catch (error) {
+        console.error('Erro ao realizar login:', error);
+        res.status(500).json({ message: 'Erro ao realizar login', error: error.message });
+    }
+});
+
 
 
 

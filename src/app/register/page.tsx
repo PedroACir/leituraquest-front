@@ -59,7 +59,7 @@ const Page = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ name, cpf, email }),
+            body: JSON.stringify({ name, cpf, email, password }), // Incluímos o campo password
         });
 
         if (response.ok) {
@@ -74,6 +74,7 @@ const Page = () => {
         alert("Erro ao conectar ao servidor.");
     }
 };
+
 
   
 

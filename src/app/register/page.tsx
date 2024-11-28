@@ -37,43 +37,44 @@ const Page = () => {
 
   const handleFormSubmit = async () => {
     const { name, cpf, email, confirmEmail, password, confirmPassword } = formData;
-  
+
     // Verificação dos campos
     if (!name || !cpf || !email || !confirmEmail || !password || !confirmPassword) {
-      alert("Por favor, preencha todos os campos.");
-      return;
+        alert("Por favor, preencha todos os campos.");
+        return;
     }
     if (email !== confirmEmail) {
-      alert("Os e-mails não coincidem.");
-      return;
+        alert("Os e-mails não coincidem.");
+        return;
     }
     if (password !== confirmPassword) {
-      alert("As senhas não coincidem.");
-      return;
+        alert("As senhas não coincidem.");
+        return;
     }
-  
+
     try {
-      // Enviar dados para o backend
-      const response = await fetch('http://localhost:3001/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, cpf, email }),
-      });
-  
-      if (response.ok) {
-        alert("Usuário cadastrado com sucesso!");
-        nextStep(); // Passa para a próxima etapa (escolher os gêneros)
-      } else {
-        const data = await response.json();
-        alert(data.message || "Erro ao cadastrar usuário.");
-      }
+        // Enviar dados para o backend
+        const response = await fetch('http://localhost:3000/register', { // Certifique-se da URL correta
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, cpf, email }),
+        });
+
+        if (response.ok) {
+            alert("Usuário cadastrado com sucesso!");
+            nextStep(); // Passa para a próxima etapa
+        } else {
+            const data = await response.json();
+            alert(data.message || "Erro ao cadastrar usuário.");
+        }
     } catch (error) {
-      console.error("Erro na solicitação:", error);
-      alert("Erro ao conectar ao servidor.");
+        console.error("Erro na solicitação:", error);
+        alert("Erro ao conectar ao servidor.");
     }
-  };
+};
+
   
 
   const savePreferences = async () => {

@@ -23,11 +23,14 @@ app.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
         }
 
+        
         const user = await prisma.user.create({
             data: { name, cpf, email },
         });
 
         res.status(201).json({ message: 'Usuário cadastrado com sucesso', user });
+        
+
     } catch (error) {
         res.status(500).json({ message: 'Erro ao cadastrar usuário', error: error.message });
     }
